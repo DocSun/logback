@@ -22,6 +22,7 @@
     <!-- ch.qos.logback.core.rolling.RollingFileAppender 文件日志输出 根据时间输出日志的策略 -->
     <appender name="timeBasedAppender"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--        <append>true</append>--> <!-- 默认是true，表示文件的追加-->
         <File>${LOG_HOME}/${appName}.log</File>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>warn</level> <!-- 先经过logger的level进行过滤，然后这里最终进行过滤，-->
@@ -30,7 +31,7 @@
         </filter>
         <encoder>
             <layout class="log.common.MyLogLayout"/>
-            <Pattern>%d|%p|%t|%C.%M|%L|%logger{36}|%m|%selfDef %n</Pattern>  <!-- 打印日志的logger的name -->
+            <Pattern>%d|%p|%t|%C{0}.%M|%L|%logger{36}|%m|%selfDef %n</Pattern>  <!-- 打印日志的logger的name -->
             <charset class="java.nio. .Charset">UTF-8</charset>  <!--解决中文乱码问题-->
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -48,6 +49,28 @@
             </TimeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
+
+    <appender name="AsyncLog" class="log.common.MyAsyncAppender">
+<!--        0表示不丢失日志，默认值。如果队列的80%已满，则会丢失warn级别以下的日志（tract，debug，info）-->
+        <discardingThreshold>0</discardingThreshold>
+<!--        是否包含调用者的信息-->
+<!--        如果为true，则以下日志输出的 ?:? 会替换成调用者的文件名跟行号，为false，则为问号。-->
+<!--        2019-12-28 01:45:15,080|WARN|main|?.?|?|CodeStudy|ZNTEST|test1|test2|test3clienteIp:localhost|protocol:https-->
+<!--        2019-12-28 01:55:09,759|WARN|main|?.?|?|CodeStudy|ZNTEST|test1|test2|test3clienteIp:localhost|protocol:https-->
+<!--        2019-12-28 01:56:17,409|WARN|main|log.test.LogTest.main|18|CodeStudy|ZNTEST|test1|test2|test3clienteIp:localhost|protocol:https-->
+<!--        2019-12-28 01:56:50,954|WARN|main|LogTest.main|18|CodeStudy|ZNTEST|test1|test2|test3clienteIp:localhost|protocol:https-->
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="timeBasedAppender"/>
+<!--        <appender-ref ref="console"/>-->
+    </appender>
+
+    <logger name="CodeStudy" level="WARN" additivity="false">
+<!--        <appender-ref ref="console"/>-->
+        <!--        同步打印日志-->
+        <!--        <appender-ref  ref="timeBasedAppender"/> -->
+        <appender-ref  ref="AsyncLog"/>
+        <!--        <appender-ref ref="file" />-->
+    </logger>
 
 <!--   文件日志输出 根据时间和单个文件大小输出日志的策略 -->
     <appender name="sizeAndTimeBasedAppender"
@@ -80,11 +103,6 @@
      level的等级从高到低： error > warn > info > debug
      2 、additivity 设置为true，表示不仅会在当前日志打印，还会在root的appender中打印
      -->
-    <logger name="CodeStudy" level="WARN" additivity="false">
-        <appender-ref ref="console"/>
-        <appender-ref  ref="timeBasedAppender"/>
-<!--        <appender-ref ref="file" />-->
-    </logger>
 
     <!--
        root与logger是父子关系，没有特别定义则默认为root，任何一个类只会和一个logger对应，

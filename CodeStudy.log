@@ -1,0 +1,4 @@
+2019-12-28 01:45:15,080|WARN|main|?.?|?|CodeStudy|ZNTEST|test1|test2|test3clienteIp:localhost|protocol:https 
+2019-12-28 01:55:09,759|WARN|main|?.?|?|CodeStudy|ZNTEST|test1|test2|test3clienteIp:localhost|protocol:https 
+2019-12-28 01:56:17,409|WARN|main|log.test.LogTest.main|18|CodeStudy|ZNTEST|test1|test2|test3clienteIp:localhost|protocol:https 
+2019-12-28 01:56:50,954|WARN|main|LogTest.main|18|CodeStudy|ZNTEST|test1|test2|test3clienteIp:localhost|protocol:https 
