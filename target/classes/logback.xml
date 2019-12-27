@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<configuration>
+    <!-- 定义日志的根目录 -->
+    <property name="LOG_HOME" value="E:/code/CodeStudy/log" />
+    <!-- 定义日志文件名称 -->
+    <property name="appName" value="CodeStudy"></property>
+
+    <!-- ch.qos.logback.core.ConsoleAppender 控制台输出 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>warn</level> <!-- 先经过logger的level进行过滤，然后这里最终进行过滤，-->
+            <!--            <levelMin>DEBUG</levelMin>-->
+            <!--            <levelMax>ERROR</levelMax>-->
+        </filter>
+        <encoder>
+            <layout class="log.common.MyLogLayout"/>
+            <Pattern>%d|%p|%t|%C.%M|%L|%logger{36}|%m|%selfDef %n</Pattern>  <!-- 打印日志的logger的name -->
+            <charset class="java.nio.charset.Charset">UTF-8</charset>  <!--解决中文乱码问题-->
+        </encoder>
+    </appender>
+
+    <!-- ch.qos.logback.core.rolling.RollingFileAppender 文件日志输出 根据时间输出日志的策略 -->
+    <appender name="timeBasedAppender"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${appName}.log</File>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>warn</level> <!-- 先经过logger的level进行过滤，然后这里最终进行过滤，-->
+<!--            <levelMin>DEBUG</levelMin>-->
+<!--            <levelMax>ERROR</levelMax>-->
+        </filter>
+        <encoder>
+            <layout class="log.common.MyLogLayout"/>
+            <Pattern>%d|%p|%t|%C.%M|%L|%logger{36}|%m|%selfDef %n</Pattern>  <!-- 打印日志的logger的name -->
+            <charset class="java.nio. .Charset">UTF-8</charset>  <!--解决中文乱码问题-->
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${appName}-%d{yyyy-MM-dd}-%i.log
+            </FileNamePattern>
+            <MaxHistory>10</MaxHistory>
+            <!--
+              当日志文件超过maxFileSize指定的大小是，根据上面提到的%i进行日志文件滚动
+               注意此处配置SizeBasedTriggeringPolicy是无法实现按文件大小进行滚动的，
+               必须配置timeBasedFileNamingAndTriggeringPolicy
+            -->
+<!--            <TimeBasedFileNamingAndTriggeringPolicy-->
+<!--                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
+<!--                <MaxFileSize>5MB</MaxFileSize>-->
+<!--            </TimeBasedFileNamingAndTriggeringPolicy>-->
+        </rollingPolicy>
+    </appender>
+
+<!--   文件日志输出 根据时间和单个文件大小输出日志的策略 -->
+    <appender name="sizeAndTimeBasedAppender"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${appName}.log</File>
+        <encoder>
+            <Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%thread] %logger{36} : %n %msg %n</Pattern>
+            <charset>UTF-8</charset>  <!--解决中文乱码问题-->
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${appName}.log.%d{yyyy-MM-dd}.%i
+            </FileNamePattern>
+            <MaxHistory>7</MaxHistory> <!--最对存储7天的日志 -->
+            <MaxFileSize>10MB</MaxFileSize> <!-- 单个文件存储的上限 -->
+            <totalSizeCap>50MB</totalSizeCap> <!-- 这个日志当天存储的上限 -->
+            <!--
+              当日志文件超过maxFileSize指定的大小是，根据上面提到的%i进行日志文件滚动
+               注意此处配置SizeBasedTriggeringPolicy是无法实现按文件大小进行滚动的，
+               必须配置timeBasedFileNamingAndTriggeringPolicy
+            -->
+<!--            <TimeBasedFileNamingAndTriggeringPolicy-->
+<!--                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
+<!--                <MaxFileSize>5MB</MaxFileSize>-->
+<!--            </TimeBasedFileNamingAndTriggeringPolicy>-->
+        </rollingPolicy>
+    </appender>
+
+    <!--
+     1  level 指的是只能打印出大于等于这个level的日志
+     level的等级从高到低： error > warn > info > debug
+     2 、additivity 设置为true，表示不仅会在当前日志打印，还会在root的appender中打印
+     -->
+    <logger name="CodeStudy" level="WARN" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref  ref="timeBasedAppender"/>
+<!--        <appender-ref ref="file" />-->
+    </logger>
+
+    <!--
+       root与logger是父子关系，没有特别定义则默认为root，任何一个类只会和一个logger对应，
+       要么是定义的logger，要么是root，判断的关键在于找到这个logger，然后判断这个logger的appender和level。
+   -->
+    <!-- 日志级别 -->
+    <root>
+        <!-- 定义了ERROR和INFO级别的日志，分别在FILE文件和控制台输出 -->
+        <level value="error" />
+        <level value="info" />
+<!--        <appender-ref ref="file" />-->
+        <appender-ref ref="console" />
+    </root>
+</configuration>
